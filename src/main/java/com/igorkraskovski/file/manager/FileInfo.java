@@ -4,7 +4,6 @@ package com.igorkraskovski.file.manager;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 
@@ -37,11 +36,11 @@ public class FileInfo {
         this.fileName = fileName;
     }
 
-    public FileType getTypeFile() {
+    public FileType getType() {
         return type;
     }
 
-    public void setTypeFile(String typeFile) {
+    public void setType(FileType type) {
         this.type = type;
     }
 
