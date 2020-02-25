@@ -11,7 +11,7 @@
       fx:controller="com.igorkraskovski.file.manager.PanelController">
 
     <HBox>
-        <ComboBox/>
+        <ComboBox fx:id="diskBox"/>
         <TextField editable="false" HBox.hgrow="ALWAYS"/>
         <Button text="Вверх"/>
     </HBox>
