@@ -11,9 +11,9 @@
       fx:controller="com.igorkraskovski.file.manager.PanelController">
 
     <HBox>
-        <ComboBox fx:id="diskBox"/>
-        <TextField editable="false" HBox.hgrow="ALWAYS"/>
-        <Button text="Вверх"/>
+        <ComboBox fx:id="diskBox" onAction="#selectDiskAction"/>
+        <TextField fx:id="pathField" editable="false" HBox.hgrow="ALWAYS"/>
+        <Button text="Вверх" onAction="#btnPathUpAction"/>
     </HBox>
     <TableView fx:id="filesTable" VBox.vgrow="ALWAYS"/>
 

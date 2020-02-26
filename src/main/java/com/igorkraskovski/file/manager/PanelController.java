@@ -2,6 +2,7 @@ package com.igorkraskovski.file.manager;
 
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
@@ -10,6 +11,8 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
+import org.omg.CORBA.WStringSeqHelper;
 
 import java.io.IOException;
 import java.net.URL;
@@ -29,6 +32,9 @@ public class PanelController implements Initializable {
 
     @FXML
     ComboBox<String> diskBox;
+
+    @FXML
+    TextField pathField;
 
     public void initialize(URL location, ResourceBundle resources) {
         TableColumn<FileInfo, String> fileTypeColumn = new TableColumn<>();
@@ -81,6 +87,7 @@ public class PanelController implements Initializable {
 
     public void updateList(Path path) {
         try {
+            pathField.setText(path.normalize().toAbsolutePath().toString());
             filesTable.getItems().clear();
             filesTable.getItems().addAll(Files.list(path).map(FileInfo::new).collect(Collectors.toList()));
             filesTable.sort();
@@ -88,5 +95,18 @@ public class PanelController implements Initializable {
             Alert alert = new Alert(Alert.AlertType.WARNING, "По какой-то причине не удалось обнавить список файлов", ButtonType.OK);
             alert.showAndWait();
         }
+    }
+
+    public void btnPathUpAction(ActionEvent actionEvent) {
+        Path upperPath = Paths.get(pathField.getText()).getParent();
+        if(upperPath != null){
+            updateList(upperPath);
+        }
+    }
+
+    public void selectDiskAction(ActionEvent actionEvent) {
+        ComboBox<String> element = (ComboBox<String>)actionEvent.getSource();
+        updateList((Paths.get(element.getSelectionModel().getSelectedItem())));
+
     }
 }
