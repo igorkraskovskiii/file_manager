@@ -3,6 +3,7 @@ package com.igorkraskovski.file.manager;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
@@ -12,11 +13,10 @@ import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
-import org.omg.CORBA.WStringSeqHelper;
+import javafx.scene.input.MouseEvent;
 
 import java.io.IOException;
 import java.net.URL;
-import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -36,6 +36,7 @@ public class PanelController implements Initializable {
     @FXML
     TextField pathField;
 
+    @Override
     public void initialize(URL location, ResourceBundle resources) {
         TableColumn<FileInfo, String> fileTypeColumn = new TableColumn<>();
         fileTypeColumn.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().getType().getName()));
@@ -48,7 +49,6 @@ public class PanelController implements Initializable {
         TableColumn<FileInfo, Long> fileSizeColumn = new TableColumn<>("Размер");
         fileSizeColumn.setCellValueFactory(param -> new SimpleObjectProperty<>(param.getValue().getSize()));
         fileSizeColumn.setPrefWidth(240);
-
 
         fileSizeColumn.setCellFactory(column -> {
             return new TableCell<FileInfo, Long>() {
@@ -82,6 +82,18 @@ public class PanelController implements Initializable {
             diskBox.getItems().add(p.toString());
         }
         diskBox.getSelectionModel().select(0);
+
+        filesTable.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                if (event.getClickCount() == 2) {
+                    Path path = Paths.get(pathField.getText()).resolve(filesTable.getSelectionModel().getSelectedItem().getFileName());
+                    if (Files.isDirectory(path)) {
+                        updateList(path);
+                    }
+                }
+            }
+        });
         updateList(Paths.get("."));
     }
 
@@ -99,14 +111,24 @@ public class PanelController implements Initializable {
 
     public void btnPathUpAction(ActionEvent actionEvent) {
         Path upperPath = Paths.get(pathField.getText()).getParent();
-        if(upperPath != null){
+        if (upperPath != null) {
             updateList(upperPath);
         }
     }
 
     public void selectDiskAction(ActionEvent actionEvent) {
-        ComboBox<String> element = (ComboBox<String>)actionEvent.getSource();
-        updateList((Paths.get(element.getSelectionModel().getSelectedItem())));
+        ComboBox<String> element = (ComboBox<String>) actionEvent.getSource();
+        updateList(Paths.get(element.getSelectionModel().getSelectedItem()));
+    }
 
+    public String getSelectedFileName() {
+        if (!filesTable.isFocused()) {
+            return null;
+        }
+        return filesTable.getSelectionModel().getSelectedItem().getFileName();
+    }
+
+    public String getCurrentPath() {
+        return pathField.getText();
     }
 }
