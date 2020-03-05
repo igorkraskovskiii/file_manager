@@ -52,4 +52,65 @@ public class Controller {
             alert.showAndWait();
         }
     }
+
+    public void moveBtnAction(ActionEvent actionEvent) {
+        PanelController leftPC = (PanelController) leftPanel.getProperties().get("ctrl");
+        PanelController rightPC = (PanelController) rightPanel.getProperties().get("ctrl");
+
+        if (leftPC.getSelectedFileName() == null && rightPC.getSelectedFileName() == null) {
+            Alert alert = new Alert(Alert.AlertType.ERROR, "Ни один файл не был выбран", ButtonType.OK);
+            alert.showAndWait();
+            return;
+        }
+
+        PanelController srcPC = null, dstPC = null;
+        if (leftPC.getSelectedFileName() != null) {
+            srcPC = leftPC;
+            dstPC = rightPC;
+        }
+        if (rightPC.getSelectedFileName() != null) {
+            srcPC = rightPC;
+            dstPC = leftPC;
+        }
+
+        Path srcPath = Paths.get(srcPC.getCurrentPath(), srcPC.getSelectedFileName());
+        Path dstPath = Paths.get(dstPC.getCurrentPath()).resolve(srcPath.getFileName().toString());
+
+        try {
+            Files.move(srcPath, dstPath);
+            dstPC.updateList(Paths.get(dstPC.getCurrentPath()));
+            srcPC.updateList(Paths.get(srcPC.getCurrentPath()));
+        } catch (IOException e) {
+            Alert alert = new Alert(Alert.AlertType.ERROR, "Не удалось переместить указанный файл", ButtonType.OK);
+            alert.showAndWait();
+        }
+    }
+
+    public void deleteBtnAction(ActionEvent actionEvent) {
+        PanelController leftPC = (PanelController) leftPanel.getProperties().get("ctrl");
+        PanelController rightPC = (PanelController) rightPanel.getProperties().get("ctrl");
+
+        if (leftPC.getSelectedFileName() == null && rightPC.getSelectedFileName() == null) {
+            Alert alert = new Alert(Alert.AlertType.ERROR, "Ни один файл не был выбран", ButtonType.OK);
+            alert.showAndWait();
+            return;
+        }
+        PanelController srcPC = null;
+        if (leftPC.getSelectedFileName() != null) {
+            srcPC = leftPC;
+        }
+        if (rightPC.getSelectedFileName() != null) {
+            srcPC = rightPC;
+        }
+
+        Path srcPath = Paths.get(srcPC.getCurrentPath(), srcPC.getSelectedFileName());
+
+        try {
+            Files.delete(srcPath);
+            srcPC.updateList(Paths.get(srcPC.getCurrentPath()));
+        } catch (IOException e) {
+            Alert alert = new Alert(Alert.AlertType.ERROR, "Не удалось удалить указанный файл", ButtonType.OK);
+            alert.showAndWait();
+        }
+    }
 }
